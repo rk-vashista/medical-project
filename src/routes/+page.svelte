@@ -1,30 +1,40 @@
 <script>
   import { fade, fly } from 'svelte/transition';
   import { goto } from '$app/navigation';
+  import { auth } from '$lib/auth';
 
   let isLogin = true;
   let userType = 'patient';
   let username = '';
   let password = '';
+  let error = '';
 
   const toggleForm = () => {
     isLogin = !isLogin;
+    error = '';
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // Here you would typically make an API call to your backend
-    console.log('Form submitted:', { isLogin, userType, username, password });
-    
-    // For demonstration, we'll just redirect to the appropriate dashboard
-    goto(`/${userType}`);
+    error = '';
+
+    try {
+      if (isLogin) {
+        await auth.login(username, password, userType);
+      } else {
+        await auth.register(username, password, userType);
+      }
+      goto(`/${userType}`);
+    } catch (err) {
+      error = err.message;
+    }
   };
 
   const userTypes = [
-    { value: 'patient', label: 'Patient', bgImage: 'https://images.unsplash.com/photo-1538108149393-fbbd81895907?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80' },
-    { value: 'doctor', label: 'Doctor', bgImage: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80' },
-    { value: 'researcher', label: 'Researcher', bgImage: 'https://images.unsplash.com/photo-1581093458791-9f3c3cf7d77d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80' },
-    { value: 'intern', label: 'Intern/Student', bgImage: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80' }
+    { value: 'patient', label: 'Patient' },
+    { value: 'doctor', label: 'Doctor' },
+    { value: 'researcher', label: 'Researcher' },
+    { value: 'intern', label: 'Intern/Student' }
   ];
 </script>
 
@@ -32,7 +42,7 @@
   <title>{isLogin ? 'Login' : 'Sign Up'} - HealthCare Plus</title>
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center bg-cover bg-center transition-all duration-500 ease-in-out" style="background-image: url('{userTypes.find(ut => ut.value === userType).bgImage}');">
+<div class="min-h-screen flex items-center justify-center bg-cover bg-center transition-all duration-500 ease-in-out" style="background-image: url('https://images.unsplash.com/photo-1505751172876-fa1923c5c528?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');">
   <div class="max-w-md w-full space-y-8 bg-white bg-opacity-90 p-10 rounded-xl shadow-2xl" in:fade={{ duration: 300 }} out:fade={{ duration: 300 }}>
     <div>
       <h2 class="mt-6 text-center text-4xl font-extrabold text-gray-900">
@@ -85,6 +95,10 @@
         </div>
       </div>
 
+      {#if error}
+        <p class="text-red-500 text-sm text-center">{error}</p>
+      {/if}
+
       <div>
         <button
           type="submit"
@@ -101,9 +115,3 @@
     </form>
   </div>
 </div>
-
-<style>
-  :global(body) {
-    background-color: #f3f4f6;
-  }
-</style>
