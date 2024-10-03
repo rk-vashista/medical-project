@@ -6,6 +6,7 @@
   import ChatBox from '$lib/components/ChatBox.svelte';
   import FileUpload from '$lib/components/FileUpload.svelte';
   import { Calendar, FileText, MessageSquare, User } from 'lucide-svelte';
+  import {patient} from '$lib';
 
   let user;
 
@@ -36,7 +37,7 @@
       <div class="flex justify-between h-16">
         <div class="flex">
           <div class="flex-shrink-0 flex items-center">
-            <img class="h-8 w-auto" src="src/lib/assets/icons/patient.svg" alt="HealthCare Plus">
+            <img class="h-8 w-auto" src={patient} alt="HealthCare Plus">
           </div>
           <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
             <a href="#" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
